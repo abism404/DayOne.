@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>ACESSO RESTRITO | ARG</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #0a0a0a;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Courier New', 'Fira Code', monospace;
+      padding: 16px;
+    }
+
+    .terminal {
+      max-width: 850px;
+      width: 100%;
+      background: #050505;
+      border: 1px solid #2a2a2a;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 0 20px rgba(255,255,255,0.1);
+    }
+
+    h1, h2 {
+      font-size: 1.6rem;
+      text-align: center;
+      color: #f0f0f0;
+      text-shadow: 0 0 4px #ffffff;
+      margin-bottom: 1.2rem;
+      letter-spacing: 1px;
+    }
+
+    .typewriter-area {
+      min-height: 240px;
+      margin: 1.5rem 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    .message-line {
+      font-size: 1rem;
+      line-height: 1.5;
+      text-align: center;
+      color: #dddddd;
+      margin: 8px 0;
+      padding: 0 12px;
+      word-break: break-word;
+    }
+
+    .cmd-input {
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid #aaaaaa;
+      color: #ffffff;
+      font-family: monospace;
+      font-size: 1rem;
+      padding: 8px 4px;
+      text-align: center;
+      width: 90%;
+      outline: none;
+      margin-top: 16px;
+    }
+    .cmd-input:focus {
+      border-bottom-color: #ffffff;
+    }
+
+    button {
+      background: #111;
+      border: 1px solid #555;
+      color: #eee;
+      padding: 10px 18px;
+      font-family: monospace;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: 0.2s;
+      margin-top: 12px;
+      border-radius: 4px;
+    }
+    button:hover {
+      background: #222;
+      border-color: #fff;
+    }
+
+    .skip-btn {
+      background: #1a1a1a;
+      border-color: #666;
+      color: #ccc;
+      font-size: 0.75rem;
+      padding: 6px 12px;
+    }
+
+    .page { display: block; }
+    .hidden-page { display: none; }
+
+    .video-box {
+      margin: 16px 0;
+      text-align: center;
+    }
+    iframe, video {
+      width: 100%;
+      border: 1px solid #444;
+      background: black;
+      border-radius: 6px;
+    }
+    iframe {
+      aspect-ratio: 16 / 9;
+    }
+    video {
+      max-height: 280px;
+    }
+
+    #responseArea {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 16px;
+    }
+
+    .error-msg {
+      color: #cc8888;
+      text-align: center;
+      margin-top: 12px;
+      font-size: 0.85rem;
+    }
+    .info-msg {
+      color: #aaa;
+      text-align: center;
+      font-size: 0.75rem;
+      margin: 8px 0;
+    }
+
+    .admin-btn {
+      position: fixed;
+      bottom: 12px;
+      right: 12px;
+      background: #151515;
+      border: 1px solid #333;
+      color: #aaa;
+      padding: 4px 10px;
+      font-size: 11px;
+      cursor: pointer;
+      z-index: 999;
+      border-radius: 4px;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.95);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
+    }
+    .modal-content {
+      background: #0c0c0c;
+      border: 1px solid #444;
+      width: 100%;
+      max-width: 500px;
+      padding: 1.5rem;
+      border-radius: 12px;
+      color: #ddd;
+      max-height: 85vh;
+      overflow-y: auto;
+    }
+    .modal-content input, .modal-content textarea {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 8px;
+      background: #1a1a1a;
+      border: 1px solid #555;
+      color: white;
+      font-family: monospace;
+    }
+    .modal-content label {
+      display: block;
+      margin-top: 12px;
+      font-weight: bold;
+    }
+
+    @media (max-width: 600px) {
+      .terminal { padding: 1rem; }
+      h1, h2 { font-size: 1.3rem; }
+      .message-line { font-size: 0.9rem; }
+      .cmd-input { width: 95%; font-size: 0.9rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="terminal">
+  <!-- PÁGINA 1: ENIGMA -->
+  <div id="page1" class="page">
+    <h1>ACESSO RESTRITO</h1>
+    <div style="text-align: center; margin: 20px 0; color: #ccc;">
+      <p>INSIRA A CREDENCIAL DE ACESSO</p>
+    </div>
+    <input type="text" id="enigmaInput" class="cmd-input" placeholder=">_ " autocomplete="off" style="width: 100%; text-align: left;">
+    <div style="display: flex; justify-content: center; margin-top: 20px;">
+      <button id="submitEnigma">VALIDAR</button>
+    </div>
+    <div id="enigmaError" class="error-msg"></div>
+  </div>
+
+  <!-- PÁGINA 2: VÍDEO -->
+  <div id="page2" class="page hidden-page">
+    <h2>TRANSMISSÃO AUTORIZADA</h2>
+    <div class="video-box" id="videoContainer">
+      <div id="videoPlayer"></div>
+    </div>
+    <div class="info-msg" id="videoInfoMsg">▶ Clique no PLAY. Ao término, o sistema avançará automaticamente.</div>
+    <div style="text-align: center;">
+      <button id="skipVideoBtn" class="skip-btn">[ PULAR TRANSMISSÃO ]</button>
+    </div>
+  </div>
+
+  <!-- PÁGINA 3: MENSAGENS DIGITADAS + PERGUNTA FINAL -->
+  <div id="page3" class="page hidden-page">
+    <div class="typewriter-area" id="typewriterArea"></div>
+    <div id="responseArea"></div>
+  </div>
+</div>
+
+<!-- Botão ADMIN -->
+<div class="admin-btn" id="adminBtn">⚙ ADMIN</div>
+
+<!-- MODAL DE CONFIGURAÇÕES -->
+<div id="adminModal" class="modal">
+  <div class="modal-content">
+    <h3>CONFIGURAÇÕES</h3>
+    <label>🔐 CREDENCIAL DE ACESSO:</label>
+    <input type="text" id="configEnigma" value="SILENTIUM">
+    <label>🎥 LINK DO VÍDEO (YouTube embed):</label>
+    <input type="text" id="configVideoUrl" value="https://www.youtube.com/embed/6D_ulrvPcyY">
+    <small>Use apenas links no formato: https://www.youtube.com/embed/ID_DO_VIDEO</small>
+    <label>📜 MENSAGENS (uma por linha):</label>
+    <textarea id="configMessages" rows="5">SINAL ESTÁVEL.
+DECODIFICANDO ARQUIVOS...
+ACESSO PARCIAL CONCEDIDO.
+REGRESSÃO MEMÓRIA ATIVADA.
+VOCÊ ESTÁ DENTRO DO SISTEMA.</textarea>
+    <label>❓ PERGUNTA FINAL:</label>
+    <input type="text" id="configFinalQuestion" value="QUAL É O NOME DO ARQUIVO?">
+    <label>🔑 RESPOSTA CORRETA:</label>
+    <input type="text" id="configFinalAnswer" value="ECHELON">
+    <label>🔗 LINK DE REDIRECIONAMENTO:</label>
+    <input type="text" id="configRedirectUrl" value="https://www.exemplo.com/arquivo_secreto">
+    <label>💬 MENSAGEM SE ERRAR:</label>
+    <input type="text" id="configWrongMsg" value="ACESSO NEGADO. CREDENCIAIS INVÁLIDAS.">
+    <button id="saveConfigBtn">SALVAR</button>
+    <button id="closeModalBtn" class="close-modal">FECHAR</button>
+  </div>
+</div>
+
+<script>
+  // ===================== CONFIGURAÇÕES =====================
+  let appConfig = {
+    enigmaAnswer: "SILENTIUM",
+    videoUrl: "https://www.youtube.com/embed/6D_ulrvPcyY",
+    messages: [
+      "SINAL ESTÁVEL.",
+      "DECODIFICANDO ARQUIVOS...",
+      "ACESSO PARCIAL CONCEDIDO.",
+      "REGRESSÃO MEMÓRIA ATIVADA.",
+      "VOCÊ ESTÁ DENTRO DO SISTEMA."
+    ],
+    finalQuestion: "QUAL É O NOME DO ARQUIVO?",
+    finalAnswer: "ECHELON",
+    redirectUrl: "https://www.exemplo.com/arquivo_secreto",
+    wrongMessage: "ACESSO NEGADO. CREDENCIAIS INVÁLIDAS."
+  };
+
+  // Variáveis de controle
+  let currentPage = 1;
+  let typingInterval = null;
+  let isTyping = false;
+  let awaitingResponse = false;
+  let videoEnded = false;
+  let ytPlayer = null;
+  let fallbackCheckInterval = null;
+
+  // Elementos DOM
+  const page1 = document.getElementById('page1');
+  const page2 = document.getElementById('page2');
+  const page3 = document.getElementById('page3');
+  const enigmaInput = document.getElementById('enigmaInput');
+  const submitEnigmaBtn = document.getElementById('submitEnigma');
+  const enigmaErrorDiv = document.getElementById('enigmaError');
+  const videoPlayerDiv = document.getElementById('videoPlayer');
+  const typewriterArea = document.getElementById('typewriterArea');
+  const responseArea = document.getElementById('responseArea');
+  const skipVideoBtn = document.getElementById('skipVideoBtn');
+
+  // ADMIN
+  const adminBtn = document.getElementById('adminBtn');
+  const adminModal = document.getElementById('adminModal');
+  const configEnigma = document.getElementById('configEnigma');
+  const configVideoUrl = document.getElementById('configVideoUrl');
+  const configMessages = document.getElementById('configMessages');
+  const configFinalQuestion = document.getElementById('configFinalQuestion');
+  const configFinalAnswer = document.getElementById('configFinalAnswer');
+  const configRedirectUrl = document.getElementById('configRedirectUrl');
+  const configWrongMsg = document.getElementById('configWrongMsg');
+  const saveConfigBtn = document.getElementById('saveConfigBtn');
+  const closeModalBtn = document.getElementById('closeModalBtn');
+
+  // ---------- FUNÇÕES ADMIN ----------
+  function syncConfig() {
+    appConfig.enigmaAnswer = configEnigma.value.trim();
+    appConfig.videoUrl = configVideoUrl.value.trim();
+    const raw = configMessages.value.split(/\r?\n/).filter(l => l.trim());
+    if (raw.length) appConfig.messages = raw;
+    appConfig.finalQuestion = configFinalQuestion.value.trim();
+    appConfig.finalAnswer = configFinalAnswer.value.trim();
+    appConfig.redirectUrl = configRedirectUrl.value.trim();
+    appConfig.wrongMessage = configWrongMsg.value.trim();
+  }
+
+  function loadToModal() {
+    configEnigma.value = appConfig.enigmaAnswer;
+    configVideoUrl.value = appConfig.videoUrl;
+    configMessages.value = appConfig.messages.join('\n');
+    configFinalQuestion.value = appConfig.finalQuestion;
+    configFinalAnswer.value = appConfig.finalAnswer;
+    configRedirectUrl.value = appConfig.redirectUrl;
+    configWrongMsg.value = appConfig.wrongMessage;
+  }
+
+  // ---------- VÍDEO COM DETECÇÃO ROBUSTA ----------
+  function onVideoComplete() {
+    if (videoEnded) return;
+    videoEnded = true;
+    if (fallbackCheckInterval) clearInterval(fallbackCheckInterval);
+    console.log("Vídeo finalizado. Avançando...");
+    setTimeout(() => {
+      if (currentPage === 2) goToPage3();
+    }, 400);
+  }
+
+  // Fallback: verifica periodicamente se o player do YouTube terminou
+  function startFallbackCheck(iframe) {
+    if (fallbackCheckInterval) clearInterval(fallbackCheckInterval);
+    fallbackCheckInterval = setInterval(() => {
+      if (videoEnded) return;
+      try {
+        // Tenta enviar mensagem para o iframe para saber o estado (não é 100% confiável, mas ajuda)
+        // Melhor: verificar via API do YouTube se disponível
+        if (ytPlayer && typeof ytPlayer.getPlayerState === 'function') {
+          const state = ytPlayer.getPlayerState();
+          if (state === YT.PlayerState.ENDED) {
+            onVideoComplete();
+          }
+        } else {
+          // fallback simples: verifica a URL do iframe? não é possível. então apenas log
+        }
+      } catch(e) { /* ignora */ }
+    }, 1000);
+  }
+
+  function renderVideo() {
+    videoPlayerDiv.innerHTML = "";
+    videoEnded = false;
+    if (fallbackCheckInterval) clearInterval(fallbackCheckInterval);
+    const url = appConfig.videoUrl;
+    if (!url) {
+      videoPlayerDiv.innerHTML = "<p style='color:red'>ERRO: Link de vídeo não configurado.</p>";
+      return;
+    }
+
+    // Verifica se é YouTube embed
+    if (url.includes('youtube.com/embed/')) {
+      // Garante que a URL tenha o parâmetro enablejsapi=1
+      let embedUrl = url;
+      if (!embedUrl.includes('enablejsapi')) {
+        embedUrl += (embedUrl.includes('?') ? '&' : '?') + 'enablejsapi=1';
+      }
+      // Adiciona origin para evitar problemas de segurança
+      const origin = window.location.origin;
+      embedUrl += `&origin=${encodeURIComponent(origin)}`;
+      
+      const iframe = document.createElement('iframe');
+      iframe.src = embedUrl;
+      iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+      iframe.allowFullscreen = true;
+      iframe.style.aspectRatio = "16/9";
+      iframe.style.width = "100%";
+      videoPlayerDiv.appendChild(iframe);
+
+      // Carrega a API do YouTube se ainda não estiver carregada
+      if (typeof YT === 'undefined') {
+        const tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        const firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+        window.onYouTubeIframeAPIReady = () => {
+          initYouTubePlayer(iframe);
+        };
+      } else {
+        initYouTubePlayer(iframe);
+      }
+    } 
+    else {
+      // Trata como vídeo HTML5 (mp4, etc)
+      const video = document.createElement('video');
+      video.controls = true;
+      video.style.width = "100%";
+      let srcUrl = url;
+      if (url.includes('drive.google.com')) {
+        let match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+        if (match) srcUrl = `https://drive.google.com/uc?export=download&id=${match[1]}`;
+      }
+      const source = document.createElement('source');
+      source.src = srcUrl;
+      source.type = "video/mp4";
+      video.appendChild(source);
+      video.addEventListener('ended', onVideoComplete);
+      videoPlayerDiv.appendChild(video);
+      video.load();
+    }
+  }
+
+  function initYouTubePlayer(iframe) {
+    try {
+      ytPlayer = new YT.Player(iframe, {
+        events: {
+          'onStateChange': (event) => {
+            if (event.data === YT.PlayerState.ENDED) {
+              onVideoComplete();
+            }
+          },
+          'onError': (error) => {
+            console.warn("YouTube player error:", error);
+            // Se houver erro, permite pular manualmente
+          }
+        }
+      });
+      // Inicia fallback por segurança
+      startFallbackCheck(iframe);
+    } catch(e) {
+      console.error("Erro ao inicializar YouTube API:", e);
+      startFallbackCheck(iframe);
+    }
+  }
+
+  // ---------- PÁGINA 3: MENSAGENS DIGITADAS ----------
+  function stopTyping() {
+    if (typingInterval) clearInterval(typingInterval);
+    isTyping = false;
+  }
+
+  function typeMessage(message, callback) {
+    stopTyping();
+    let idx = 0;
+    const div = document.createElement('div');
+    div.className = 'message-line';
+    typewriterArea.appendChild(div);
+    isTyping = true;
+    typingInterval = setInterval(() => {
+      if (idx < message.length) {
+        div.textContent += message[idx];
+        idx++;
+      } else {
+        clearInterval(typingInterval);
+        isTyping = false;
+        if (callback) callback();
+      }
+    }, 45);
+  }
+
+  function showMessagesSequentially(index) {
+    if (index >= appConfig.messages.length) {
+      showFinalQuestion();
+      return;
+    }
+    typeMessage(appConfig.messages[index], () => {
+      setTimeout(() => showMessagesSequentially(index + 1), 400);
+    });
+  }
+
+  function showFinalQuestion() {
+    if (awaitingResponse) return;
+    awaitingResponse = true;
+    const question = appConfig.finalQuestion;
+    const qDiv = document.createElement('div');
+    qDiv.className = 'message-line';
+    qDiv.style.fontWeight = 'bold';
+    typewriterArea.appendChild(qDiv);
+    let charIndex = 0;
+    const qInterval = setInterval(() => {
+      if (charIndex < question.length) {
+        qDiv.textContent += question[charIndex];
+        charIndex++;
+      } else {
+        clearInterval(qInterval);
+        createResponseInput();
+      }
+    }, 45);
+  }
+
+  function createResponseInput() {
+    responseArea.innerHTML = '';
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'cmd-input';
+    input.placeholder = '>_';
+    input.autocomplete = 'off';
+    const btn = document.createElement('button');
+    btn.textContent = 'ENVIAR';
+    responseArea.appendChild(input);
+    responseArea.appendChild(btn);
+    input.focus();
+
+    const checkAnswer = () => {
+      const answer = input.value.trim();
+      if (answer === appConfig.finalAnswer) {
+        window.location.href = appConfig.redirectUrl;
+      } else {
+        const errDiv = document.createElement('div');
+        errDiv.className = 'error-msg';
+        errDiv.textContent = appConfig.wrongMessage;
+        responseArea.appendChild(errDiv);
+        input.value = '';
+        input.focus();
+        setTimeout(() => errDiv.remove(), 2500);
+      }
+    };
+    btn.addEventListener('click', checkAnswer);
+    input.addEventListener('keypress', (e) => { if (e.key === 'Enter') checkAnswer(); });
+  }
+
+  function resetPage3() {
+    stopTyping();
+    typewriterArea.innerHTML = '';
+    responseArea.innerHTML = '';
+    awaitingResponse = false;
+  }
+
+  function startPage3() {
+    resetPage3();
+    showMessagesSequentially(0);
+  }
+
+  // ---------- CONTROLE DE PÁGINAS ----------
+  function showPage(pageNum) {
+    page1.classList.add('hidden-page');
+    page2.classList.add('hidden-page');
+    page3.classList.add('hidden-page');
+    if (pageNum === 1) {
+      page1.classList.remove('hidden-page');
+      currentPage = 1;
+    } else if (pageNum === 2) {
+      page2.classList.remove('hidden-page');
+      currentPage = 2;
+      videoEnded = false;
+      renderVideo();
+    } else if (pageNum === 3) {
+      page3.classList.remove('hidden-page');
+      currentPage = 3;
+      startPage3();
+    }
+  }
+
+  function checkEnigma() {
+    const answer = enigmaInput.value.trim();
+    if (answer === appConfig.enigmaAnswer) {
+      enigmaErrorDiv.textContent = '';
+      showPage(2);
+    } else {
+      enigmaErrorDiv.textContent = "ACESSO NEGADO. CREDENCIAL INVÁLIDA.";
+    }
+  }
+
+  function goToPage3() {
+    showPage(3);
+  }
+
+  function skipVideo() {
+    if (currentPage === 2 && !videoEnded) {
+      onVideoComplete();
+    }
+  }
+
+  // ---------- MODAL ADMIN ----------
+  function openModal() {
+    loadToModal();
+    adminModal.style.display = 'flex';
+  }
+  function closeModal() {
+    adminModal.style.display = 'none';
+  }
+  function saveAndClose() {
+    syncConfig();
+    closeModal();
+    // Se estiver na página de vídeo, recarrega o vídeo com nova URL
+    if (currentPage === 2) {
+      renderVideo();
+    }
+    // Se estiver na página de mensagens, reinicia
+    if (currentPage === 3) {
+      startPage3();
+    }
+  }
+
+  // ---------- EVENTOS ----------
+  submitEnigmaBtn.addEventListener('click', checkEnigma);
+  enigmaInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') checkEnigma(); });
+  adminBtn.addEventListener('click', openModal);
+  closeModalBtn.addEventListener('click', closeModal);
+  saveConfigBtn.addEventListener('click', saveAndClose);
+  skipVideoBtn.addEventListener('click', skipVideo);
+
+  // Inicialização
+  function init() {
+    showPage(1);
+    loadToModal();
+  }
+  init();
+</script>
+</body>
+</html>
